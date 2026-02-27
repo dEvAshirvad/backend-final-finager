@@ -1,0 +1,17 @@
+services:
+  redis_container:
+    image: redis:latest
+    restart: always
+    container_name: redis_container
+    env_file:
+      - .env
+    ports:
+      - ${REDIS_PORT}:6379
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - ./redis_data:/data
+
+volumes:
+  redis_data:
