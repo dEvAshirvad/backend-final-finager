@@ -13,7 +13,7 @@
     "dev": "cross-env nodemon src/index.ts",
     "start": "cross-env node dist/index.js",
     "prepare": "husky",
-    "build": "rm -rf ./dist && tsc && tsc-alias",
+    "build": "rm -rf ./dist && tsc && tsc-alias && cp src/modules/accounting/coa/coa.template.json dist/modules/accounting/coa/coa.template.json && cp src/modules/accounting/events/events.template.json dist/modules/accounting/events/events.template.json",
     "clean:install": "rm -rf ./node_modules && rm -r package-lock.json && pnpm i",
     "clean:find-unused": "knip",
     "lint": "eslint src/**/*.ts",
