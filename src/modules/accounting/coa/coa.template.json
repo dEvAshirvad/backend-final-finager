@@ -1,0 +1,501 @@
+{
+  "retail": [
+    {
+      "code": "1001",
+      "name": "Cash in Hand",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1002",
+      "name": "Bank Accounts",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1100",
+      "name": "Accounts Receivable",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1200",
+      "name": "Prepaid Expenses",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1300",
+      "name": "Inventory",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1400",
+      "name": "Equipment",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1500",
+      "name": "GST Input Credit",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "2000",
+      "name": "Accounts Payable",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2100",
+      "name": "Short-Term Loans",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2200",
+      "name": "GST Payable",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2201",
+      "name": "GST IGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2202",
+      "name": "GST CGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2203",
+      "name": "GST SGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2300",
+      "name": "Long-Term Debt",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "3000",
+      "name": "Owner's Capital",
+      "type": "EQUITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "3100",
+      "name": "Retained Earnings",
+      "type": "EQUITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "4000",
+      "name": "Sales Revenue",
+      "type": "INCOME",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "4100",
+      "name": "Sales Returns",
+      "type": "INCOME",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "4200",
+      "name": "Other Income",
+      "type": "INCOME",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "5000",
+      "name": "Cost of Goods Sold",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5100",
+      "name": "Salaries and Wages",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5200",
+      "name": "Rent Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5300",
+      "name": "Utilities Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5400",
+      "name": "Advertising Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5500",
+      "name": "Depreciation Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5600",
+      "name": "Interest Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    }
+  ],
+  "serviceBased": [
+    {
+      "code": "1001",
+      "name": "Cash in Hand",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1002",
+      "name": "Bank Accounts",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1100",
+      "name": "Accounts Receivable",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1200",
+      "name": "Prepaid Expenses",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1300",
+      "name": "Office Supplies",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1400",
+      "name": "Equipment",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1500",
+      "name": "GST Input Credit",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "2000",
+      "name": "Accounts Payable",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2100",
+      "name": "Salaries Payable",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2200",
+      "name": "GST Payable",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2201",
+      "name": "GST IGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2202",
+      "name": "GST CGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2203",
+      "name": "GST SGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2300",
+      "name": "Unearned Revenue",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "3000",
+      "name": "Owner's Capital",
+      "type": "EQUITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "3100",
+      "name": "Retained Earnings",
+      "type": "EQUITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "4000",
+      "name": "Service Revenue",
+      "type": "INCOME",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "4100",
+      "name": "Other Income",
+      "type": "INCOME",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "5000",
+      "name": "Salaries and Wages",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5100",
+      "name": "Professional Fees",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5200",
+      "name": "Rent Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5300",
+      "name": "Utilities Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5400",
+      "name": "Advertising Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5500",
+      "name": "Depreciation Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5600",
+      "name": "Interest Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    }
+  ],
+  "manufacturing": [
+    {
+      "code": "1001",
+      "name": "Cash in Hand",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1002",
+      "name": "Bank Accounts",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1100",
+      "name": "Accounts Receivable",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1200",
+      "name": "Prepaid Expenses",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1300",
+      "name": "Inventory",
+      "type": "ASSET",
+      "normalBalance": "DEBIT",
+      "parentCode": null
+    },
+    {
+      "code": "1301",
+      "name": "Raw Materials Inventory",
+      "type": "ASSET",
+      "normalBalance": "DEBIT",
+      "parentCode": "1300"
+    },
+    {
+      "code": "1302",
+      "name": "Work-in-Progress Inventory",
+      "type": "ASSET",
+      "normalBalance": "DEBIT",
+      "parentCode": "1300"
+    },
+    {
+      "code": "1303",
+      "name": "Finished Goods Inventory",
+      "type": "ASSET",
+      "normalBalance": "DEBIT",
+      "parentCode": "1300"
+    },
+    {
+      "code": "1400",
+      "name": "Machinery and Equipment",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "1500",
+      "name": "GST Input Credit",
+      "type": "ASSET",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "2000",
+      "name": "Accounts Payable",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2100",
+      "name": "Short-Term Loans",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2200",
+      "name": "GST Payable",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "2201",
+      "name": "GST IGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2202",
+      "name": "GST CGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2203",
+      "name": "GST SGST Output",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT",
+      "parentCode": "2200"
+    },
+    {
+      "code": "2300",
+      "name": "Long-Term Debt",
+      "type": "LIABILITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "3000",
+      "name": "Owner's Capital",
+      "type": "EQUITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "3100",
+      "name": "Retained Earnings",
+      "type": "EQUITY",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "4000",
+      "name": "Sales Revenue",
+      "type": "INCOME",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "4100",
+      "name": "Other Income",
+      "type": "INCOME",
+      "normalBalance": "CREDIT"
+    },
+    {
+      "code": "5000",
+      "name": "Cost of Goods Sold",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5100",
+      "name": "Direct Labor",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5200",
+      "name": "Factory Overhead",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5300",
+      "name": "Salaries and Wages",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5400",
+      "name": "Rent Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5500",
+      "name": "Utilities Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5600",
+      "name": "Depreciation Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    },
+    {
+      "code": "5700",
+      "name": "Interest Expense",
+      "type": "EXPENSE",
+      "normalBalance": "DEBIT"
+    }
+  ]
+}

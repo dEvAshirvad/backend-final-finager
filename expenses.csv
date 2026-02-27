@@ -1,0 +1,5 @@
+reference,date,contactId,paymentMode,category,expenseType,items,isInventoryItem,inventoryItems,receiptRef,narration
+EXP-000001,2026-03-02,,CASH,RENT,PRE-OPENING,"[{""description"":""Office rent – March"",""amount"":60000,""category"":""RENT""}]",false,[],RENT-MAR-2026,"Office rent for March (pre-opening)"
+EXP-000002,2026-03-03,,ONLINE,PROFESSIONAL_FEES,BRANDING,"[{""description"":""Branding & logo design"",""amount"":15000,""category"":""BRANDING""}]",false,[],BRAND-LOGO-01,"Branding and logo design fee paid to Pixel Studio"
+EXP-000003,2026-03-04,,CREDIT,RAW_MATERIAL,INVENTORY_PURCHASE,[],true,"[{""productId"":"""",""qty"":50,""costPerUnit"":220,""skuCombo"":""Graphic Tee""}]",PO-GT-0001,"Inventory purchase – 50 Graphic Tees on credit"
+EXP-000004,2026-03-05,,CREDIT,RAW_MATERIAL,INVENTORY_PURCHASE,[],true,"[{""productId"":"""",""qty"":30,""costPerUnit"":700,""skuCombo"":""Slim Fit Jeans""}]",PO-SJ-0001,"Inventory purchase – 30 Slim Fit Jeans on credit"

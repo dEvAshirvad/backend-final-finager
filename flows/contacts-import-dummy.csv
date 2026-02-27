@@ -1,0 +1,5 @@
+name,type,legalName,gstin,pan,email,phone,address,city,state,stateCode,pincode,placeOfSupply,creditLimit,paymentTermsDays,tags,notes,isActive
+Acme Pvt Ltd,CUSTOMER,Acme Private Limited,22AAAAA0000A1Z5,AAAAA0000A,billing@acme.com,+919876543210,"123 Main St",Bhubaneswar,Odisha,21,751001,21-Odisha,100000,30,vip,Preferred customer,true
+XYZ Suppliers,VENDOR,XYZ Suppliers Pvt Ltd,22BBBBB1111B2Z6,BBBBB1111B,vendor@xyz.com,+919876543211,"456 Vendor Lane",Cuttack,Odisha,21,753001,21-Odisha,50000,30,,,true
+Priya Retail,CUSTOMER,,,priya@example.com,+919876543212,,Bhubaneswar,Odisha,21,751002,,,30,,,true
+Quick Vendor,VENDOR,,,vendor@quick.com,,,"Block A",Mumbai,Maharashtra,27,400001,27-Maharashtra,,15,,,true

@@ -1,0 +1,1440 @@
+{
+  "retail": [
+    {
+      "name": "Product Added (Initial Stock / Purchase)",
+      "orchid": "PRODUCT_ADDED",
+      "referenceConfig": {
+        "prefix": "PA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Product added to inventory: %name% on %date%",
+      "inputSchema": {
+        "required": ["productId", "name", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %name% (%productId%)"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Cash paid for product %name% addition"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Received (Purchase / Inward)",
+      "orchid": "STOCK_IN",
+      "referenceConfig": {
+        "prefix": "SI",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock received: %productName% qty %qty% on %date%",
+      "inputSchema": {
+        "required": ["productName", "qty", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Stock in - %productName% (%qty% units)"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Paid for stock receipt - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Issued / Sold",
+      "orchid": "STOCK_OUT",
+      "referenceConfig": {
+        "prefix": "SO",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock out: %productName% qty %qty% on %date%",
+      "inputSchema": {
+        "required": ["productName", "qty", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5000",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["COGS - %productName% (%qty% units)"]
+        },
+        {
+          "accountCode": "1300",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory reduction - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Adjustment (Manual Correction)",
+      "orchid": "STOCK_ADJUSTED",
+      "referenceConfig": {
+        "prefix": "SA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock adjustment for %productName% on %date% - %adjustmentType%",
+      "inputSchema": {
+        "required": ["productName", "adjustmentValue", "adjustmentType", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "adjustmentValue", "operator": "direct" },
+          "narrationConfig": ["Stock gain adjustment - %productName%"]
+        },
+        {
+          "accountCode": "4200",
+          "direction": "credit",
+          "amountConfig": { "field": "adjustmentValue", "operator": "direct" },
+          "narrationConfig": ["Gain on stock adjustment - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Bulk Product Import",
+      "orchid": "BULK_PRODUCT_ADDED",
+      "referenceConfig": {
+        "prefix": "BPA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Bulk product import on %date% - %importedCount% items",
+      "inputSchema": {
+        "required": ["importedCount", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": [
+            "Bulk inventory addition - %importedCount% products"
+          ]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Cash used for bulk product import"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Cash)",
+      "orchid": "INVOICE_CASH",
+      "referenceConfig": {
+        "prefix": "INV-C",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Cash Invoice %reference% - %date% to %contactName%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "cgst",
+          "sgst",
+          "igst",
+          "totalCost",
+          "date",
+          "contactName"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1001",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash received for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "taxableAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - invoice %reference%"]
+        },
+        {
+          "accountCode": "2201",
+          "direction": "credit",
+          "amountConfig": { "field": "cgst", "operator": "direct" },
+          "narrationConfig": ["Output CGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "2202",
+          "direction": "credit",
+          "amountConfig": { "field": "sgst", "operator": "direct" },
+          "narrationConfig": ["Output SGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "2203",
+          "direction": "credit",
+          "amountConfig": { "field": "igst", "operator": "direct" },
+          "narrationConfig": ["Output IGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "5000",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["COGS for invoice %reference%"]
+        },
+        {
+          "accountCode": "1300",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory reduction - invoice %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Online/Bank)",
+      "orchid": "INVOICE_ONLINE",
+      "referenceConfig": {
+        "prefix": "INV-O",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Online Invoice %reference% - %date% to %contactName%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "cgst",
+          "sgst",
+          "igst",
+          "totalCost",
+          "date",
+          "contactName"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1002",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank received for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "taxableAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - invoice %reference%"]
+        },
+        {
+          "accountCode": "2201",
+          "direction": "credit",
+          "amountConfig": { "field": "cgst", "operator": "direct" },
+          "narrationConfig": ["Output CGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "2202",
+          "direction": "credit",
+          "amountConfig": { "field": "sgst", "operator": "direct" },
+          "narrationConfig": ["Output SGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "2203",
+          "direction": "credit",
+          "amountConfig": { "field": "igst", "operator": "direct" },
+          "narrationConfig": ["Output IGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "5000",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["COGS for invoice %reference%"]
+        },
+        {
+          "accountCode": "1300",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory reduction - invoice %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Credit/Receivable)",
+      "orchid": "INVOICE_CREDIT",
+      "referenceConfig": {
+        "prefix": "INV-R",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Credit Invoice %reference% - %date% to %contactName%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "cgst",
+          "sgst",
+          "igst",
+          "totalCost",
+          "date",
+          "contactName"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1100",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Receivable for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "taxableAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - invoice %reference%"]
+        },
+        {
+          "accountCode": "2201",
+          "direction": "credit",
+          "amountConfig": { "field": "cgst", "operator": "direct" },
+          "narrationConfig": ["Output CGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "2202",
+          "direction": "credit",
+          "amountConfig": { "field": "sgst", "operator": "direct" },
+          "narrationConfig": ["Output SGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "2203",
+          "direction": "credit",
+          "amountConfig": { "field": "igst", "operator": "direct" },
+          "narrationConfig": ["Output IGST - invoice %reference%"]
+        },
+        {
+          "accountCode": "5000",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["COGS for invoice %reference%"]
+        },
+        {
+          "accountCode": "1300",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory reduction - invoice %reference%"]
+        }
+      ]
+    },
+
+    {
+      "name": "Expense (Cash)",
+      "orchid": "EXPENSE_CASH",
+      "referenceConfig": {
+        "prefix": "EXP-C",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Cash paid on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "taxableAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST Credit - %reference%"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash paid for expense %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Expense (Online/Bank)",
+      "orchid": "EXPENSE_ONLINE",
+      "referenceConfig": {
+        "prefix": "EXP-O",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Bank transfer on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "taxableAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST Credit - %reference%"]
+        },
+        {
+          "accountCode": "1002",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank paid for expense %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Expense (Credit/Payable)",
+      "orchid": "EXPENSE_CREDIT",
+      "referenceConfig": {
+        "prefix": "EXP-R",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Credit purchase on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "taxableAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST Credit - %reference%"]
+        },
+        {
+          "accountCode": "2000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Accounts Payable - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Cash)",
+      "orchid": "EXPENSE_INVENTORY_CASH",
+      "referenceConfig": {
+        "prefix": "EXP-IC",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Cash on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash paid for inventory purchase %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Online/Bank)",
+      "orchid": "EXPENSE_INVENTORY_ONLINE",
+      "referenceConfig": {
+        "prefix": "EXP-IO",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Bank on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "1002",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank paid for inventory purchase %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Credit)",
+      "orchid": "EXPENSE_INVENTORY_CREDIT",
+      "referenceConfig": {
+        "prefix": "EXP-I",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Credit on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "2000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Payable for inventory purchase %reference%"]
+        }
+      ]
+    }
+  ],
+  "serviceBased": [
+    {
+      "name": "Product Added (Initial Stock / Purchase)",
+      "orchid": "PRODUCT_ADDED",
+      "referenceConfig": {
+        "prefix": "PA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Product added to inventory: %name% on %date%",
+      "inputSchema": {
+        "required": ["productId", "name", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %name% (%productId%)"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Cash paid for product %name% addition"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Received (Purchase / Inward)",
+      "orchid": "STOCK_IN",
+      "referenceConfig": {
+        "prefix": "SI",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock received: %productName% qty %qty% on %date%",
+      "inputSchema": {
+        "required": ["productName", "qty", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Stock in - %productName% (%qty% units)"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Paid for stock receipt - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Issued / Sold",
+      "orchid": "STOCK_OUT",
+      "referenceConfig": {
+        "prefix": "SO",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock out: %productName% qty %qty% on %date%",
+      "inputSchema": {
+        "required": ["productName", "qty", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5000",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["COGS - %productName% (%qty% units)"]
+        },
+        {
+          "accountCode": "1300",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory reduction - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Adjustment (Manual Correction)",
+      "orchid": "STOCK_ADJUSTED",
+      "referenceConfig": {
+        "prefix": "SA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock adjustment for %productName% on %date% - %adjustmentType%",
+      "inputSchema": {
+        "required": ["productName", "adjustmentValue", "adjustmentType", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "adjustmentValue", "operator": "direct" },
+          "narrationConfig": ["Stock gain adjustment - %productName%"]
+        },
+        {
+          "accountCode": "4200",
+          "direction": "credit",
+          "amountConfig": { "field": "adjustmentValue", "operator": "direct" },
+          "narrationConfig": ["Gain on stock adjustment - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Bulk Product Import",
+      "orchid": "BULK_PRODUCT_ADDED",
+      "referenceConfig": {
+        "prefix": "BPA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Bulk product import on %date% - %importedCount% items",
+      "inputSchema": {
+        "required": ["importedCount", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": [
+            "Bulk inventory addition - %importedCount% products"
+          ]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Cash used for bulk product import"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Cash)",
+      "orchid": "INVOICE_CASH",
+      "referenceConfig": {
+        "prefix": "INV-C",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Invoice %reference% - Cash sale on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1001",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash received for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Online/Bank)",
+      "orchid": "INVOICE_ONLINE",
+      "referenceConfig": {
+        "prefix": "INV-O",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Invoice %reference% - Bank sale on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1002",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank received for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Credit/Receivable)",
+      "orchid": "INVOICE_CREDIT",
+      "referenceConfig": {
+        "prefix": "INV-R",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Invoice %reference% - Credit sale on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1100",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Receivable for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Expense (Cash)",
+      "orchid": "EXPENSE_CASH",
+      "referenceConfig": {
+        "prefix": "EXP-C",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Cash on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash paid - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Expense (Online/Bank)",
+      "orchid": "EXPENSE_ONLINE",
+      "referenceConfig": {
+        "prefix": "EXP-O",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Bank on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "1002",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank paid - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Expense (Credit/Payable)",
+      "orchid": "EXPENSE_CREDIT",
+      "referenceConfig": {
+        "prefix": "EXP-R",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Credit on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "2000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Payable - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Cash)",
+      "orchid": "EXPENSE_INVENTORY_CASH",
+      "referenceConfig": {
+        "prefix": "EXP-IC",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Cash on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash paid for inventory purchase %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Online/Bank)",
+      "orchid": "EXPENSE_INVENTORY_ONLINE",
+      "referenceConfig": {
+        "prefix": "EXP-IO",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Bank on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "1002",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank paid for inventory purchase %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Credit)",
+      "orchid": "EXPENSE_INVENTORY_CREDIT",
+      "referenceConfig": {
+        "prefix": "EXP-I",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Credit on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "2000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Payable for inventory purchase %reference%"]
+        }
+      ]
+    }
+  ],
+  "manufacturing": [
+    {
+      "name": "Product Added (Initial Stock / Purchase)",
+      "orchid": "PRODUCT_ADDED",
+      "referenceConfig": {
+        "prefix": "PA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Product added to inventory: %name% on %date%",
+      "inputSchema": {
+        "required": ["productId", "name", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %name% (%productId%)"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Cash paid for product %name% addition"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Received (Purchase / Inward)",
+      "orchid": "STOCK_IN",
+      "referenceConfig": {
+        "prefix": "SI",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock received: %productName% qty %qty% on %date%",
+      "inputSchema": {
+        "required": ["productName", "qty", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Stock in - %productName% (%qty% units)"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Paid for stock receipt - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Issued / Sold",
+      "orchid": "STOCK_OUT",
+      "referenceConfig": {
+        "prefix": "SO",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock out: %productName% qty %qty% on %date%",
+      "inputSchema": {
+        "required": ["productName", "qty", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5000",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["COGS - %productName% (%qty% units)"]
+        },
+        {
+          "accountCode": "1300",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory reduction - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Stock Adjustment (Manual Correction)",
+      "orchid": "STOCK_ADJUSTED",
+      "referenceConfig": {
+        "prefix": "SA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Stock adjustment for %productName% on %date% - %adjustmentType%",
+      "inputSchema": {
+        "required": ["productName", "adjustmentValue", "adjustmentType", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "adjustmentValue", "operator": "direct" },
+          "narrationConfig": ["Stock gain adjustment - %productName%"]
+        },
+        {
+          "accountCode": "4200",
+          "direction": "credit",
+          "amountConfig": { "field": "adjustmentValue", "operator": "direct" },
+          "narrationConfig": ["Gain on stock adjustment - %productName%"]
+        }
+      ]
+    },
+    {
+      "name": "Bulk Product Import",
+      "orchid": "BULK_PRODUCT_ADDED",
+      "referenceConfig": {
+        "prefix": "BPA",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Bulk product import on %date% - %importedCount% items",
+      "inputSchema": {
+        "required": ["importedCount", "totalCost", "date"]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": [
+            "Bulk inventory addition - %importedCount% products"
+          ]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Cash used for bulk product import"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Cash)",
+      "orchid": "INVOICE_CASH",
+      "referenceConfig": {
+        "prefix": "INV-C",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Invoice %reference% - Cash sale on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1001",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash received for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Online/Bank)",
+      "orchid": "INVOICE_ONLINE",
+      "referenceConfig": {
+        "prefix": "INV-O",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Invoice %reference% - Bank sale on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1002",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank received for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Invoice (Credit/Receivable)",
+      "orchid": "INVOICE_CREDIT",
+      "referenceConfig": {
+        "prefix": "INV-R",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Invoice %reference% - Credit sale on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1100",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Receivable for invoice %reference%"]
+        },
+        {
+          "accountCode": "4000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Sales revenue - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Expense (Cash)",
+      "orchid": "EXPENSE_CASH",
+      "referenceConfig": {
+        "prefix": "EXP-C",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Cash on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash paid - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Expense (Online/Bank)",
+      "orchid": "EXPENSE_ONLINE",
+      "referenceConfig": {
+        "prefix": "EXP-O",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Bank on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "1002",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank paid - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Expense (Credit/Payable)",
+      "orchid": "EXPENSE_CREDIT",
+      "referenceConfig": {
+        "prefix": "EXP-R",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Expense %reference% - Credit on %date%",
+      "inputSchema": { "required": ["totalAmount", "date", "reference"] },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "5200",
+          "direction": "debit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Expense - %reference%"]
+        },
+        {
+          "accountCode": "2000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Payable - %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Cash)",
+      "orchid": "EXPENSE_INVENTORY_CASH",
+      "referenceConfig": {
+        "prefix": "EXP-IC",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Cash on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "1001",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Cash paid for inventory purchase %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Online/Bank)",
+      "orchid": "EXPENSE_INVENTORY_ONLINE",
+      "referenceConfig": {
+        "prefix": "EXP-IO",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Bank on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "1002",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Bank paid for inventory purchase %reference%"]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Purchase Expense (Credit)",
+      "orchid": "EXPENSE_INVENTORY_CREDIT",
+      "referenceConfig": {
+        "prefix": "EXP-I",
+        "serialMethod": "incrementor",
+        "length": 6
+      },
+      "narrationConfig": "Inventory purchase %reference% - Credit on %date%",
+      "inputSchema": {
+        "required": [
+          "totalAmount",
+          "taxableAmount",
+          "gstAmount",
+          "totalCost",
+          "date",
+          "reference"
+        ]
+      },
+      "plugins": ["journal"],
+      "linesRule": [
+        {
+          "accountCode": "1300",
+          "direction": "debit",
+          "amountConfig": { "field": "totalCost", "operator": "direct" },
+          "narrationConfig": ["Inventory addition - %reference%"]
+        },
+        {
+          "accountCode": "1500",
+          "direction": "debit",
+          "amountConfig": { "field": "gstAmount", "operator": "direct" },
+          "narrationConfig": ["Input GST on inventory purchase %reference%"]
+        },
+        {
+          "accountCode": "2000",
+          "direction": "credit",
+          "amountConfig": { "field": "totalAmount", "operator": "direct" },
+          "narrationConfig": ["Payable for inventory purchase %reference%"]
+        }
+      ]
+    }
+  ]
+}

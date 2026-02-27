@@ -1,0 +1,121 @@
+{
+  "entries": [
+    {
+      "date": "2026-02-01",
+      "reference": "JV-001",
+      "description": "Capital contribution",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 100000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5c5", "debit": 0, "credit": 100000 }
+      ]
+    },
+    {
+      "date": "2026-02-05",
+      "reference": "JV-002",
+      "description": "Cash sale",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 25000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5c7", "debit": 0, "credit": 25000 }
+      ]
+    },
+    {
+      "date": "2026-02-08",
+      "reference": "JV-003",
+      "description": "Inventory purchase (cash)",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5be", "debit": 15000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 0, "credit": 15000 }
+      ]
+    },
+    {
+      "date": "2026-02-10",
+      "reference": "JV-004",
+      "description": "Rent paid",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5cc", "debit": 5000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 0, "credit": 5000 }
+      ]
+    },
+    {
+      "date": "2026-02-12",
+      "reference": "JV-005",
+      "description": "Salaries paid",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5cb", "debit": 10000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 0, "credit": 10000 }
+      ]
+    },
+    {
+      "date": "2026-02-14",
+      "reference": "JV-006",
+      "description": "Short-term loan received",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 50000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5c2", "debit": 0, "credit": 50000 }
+      ]
+    },
+    {
+      "date": "2026-02-16",
+      "reference": "JV-007",
+      "description": "Equipment purchase",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5bf", "debit": 20000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 0, "credit": 20000 }
+      ]
+    },
+    {
+      "date": "2026-02-18",
+      "reference": "JV-008",
+      "description": "Cost of goods sold (inventory sold)",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5ca", "debit": 8000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5be", "debit": 0, "credit": 8000 }
+      ]
+    },
+    {
+      "date": "2026-02-20",
+      "reference": "JV-009",
+      "description": "Interest on loan paid",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5d0", "debit": 1000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 0, "credit": 1000 }
+      ]
+    },
+    {
+      "date": "2026-02-22",
+      "reference": "JV-010",
+      "description": "Advertising expense",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5ce", "debit": 2000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 0, "credit": 2000 }
+      ]
+    },
+    {
+      "date": "2026-02-25",
+      "reference": "JV-011",
+      "description": "Utilities expense",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5cd", "debit": 1500, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 0, "credit": 1500 }
+      ]
+    },
+    {
+      "date": "2026-02-26",
+      "reference": "JV-012",
+      "description": "Additional cash sale",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 15000, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5c7", "debit": 0, "credit": 15000 }
+      ]
+    },
+    {
+      "date": "2026-02-28",
+      "reference": "JV-013",
+      "description": "Other income (interest received)",
+      "lines": [
+        { "accountId": "69940677f64f789748e3e5ba", "debit": 500, "credit": 0 },
+        { "accountId": "69940677f64f789748e3e5c9", "debit": 0, "credit": 500 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "periodFrom": "2026-02-01",
+  "periodTo": "2026-02-28",
+  "config": {
+    "revenue": [
+      { "label": "Sales Revenue", "accountIds": ["69940677f64f789748e3e5c7"] },
+      { "label": "Sales Returns", "accountIds": ["69940677f64f789748e3e5c8"] }
+    ],
+    "cogs": [
+      {
+        "label": "Cost of Goods Sold",
+        "accountIds": ["69940677f64f789748e3e5ca"]
+      }
+    ],
+    "operatingExpenses": [
+      { "label": "Salaries and Wages", "accountIds": ["69940677f64f789748e3e5cb"] },
+      { "label": "Rent Expense", "accountIds": ["69940677f64f789748e3e5cc"] },
+      { "label": "Utilities Expense", "accountIds": ["69940677f64f789748e3e5cd"] },
+      { "label": "Advertising Expense", "accountIds": ["69940677f64f789748e3e5ce"] },
+      { "label": "Depreciation Expense", "accountIds": ["69940677f64f789748e3e5cf"] }
+    ],
+    "otherIncome": [
+      { "label": "Other Income", "accountIds": ["69940677f64f789748e3e5c9"] }
+    ],
+    "otherExpenses": [
+      {
+        "label": "Interest Expense",
+        "accountIds": ["69940677f64f789748e3e5d0"]
+      }
+    ]
+  }
+}

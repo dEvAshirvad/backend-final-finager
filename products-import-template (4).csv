@@ -1,0 +1,2 @@
+name,variants,hsnOrSacCode,isInventoryItem,productType,bom,gstRate,category,unit,costPrice,sellingPrice,lowStockThreshold,tags,notes,isActive
+Plain Shirt,"orange-%-M-%-3,orange-%-L-%-7",6109,true,FINISHED,,12,apparel,pcs,200,350,10,"mens,summer",Example note,true

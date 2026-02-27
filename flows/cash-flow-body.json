@@ -1,0 +1,24 @@
+{
+  "periodFrom": "2026-02-01",
+  "periodTo": "2026-02-28",
+  "config": {
+    "operating": [
+      { "label": "Cash from Sales", "accountIds": ["69940677f64f789748e3e5c7", "69940677f64f789748e3e5c8"], "sign": "negative" },
+      { "label": "Other Income Received", "accountIds": ["69940677f64f789748e3e5c9"], "sign": "negative" },
+      { "label": "Cash paid for COGS", "accountIds": ["69940677f64f789748e3e5ca"], "sign": "negative" },
+      { "label": "Salaries Paid", "accountIds": ["69940677f64f789748e3e5cb"], "sign": "negative" },
+      { "label": "Rent Paid", "accountIds": ["69940677f64f789748e3e5cc"], "sign": "negative" },
+      { "label": "Utilities Paid", "accountIds": ["69940677f64f789748e3e5cd"], "sign": "negative" },
+      { "label": "Advertising Paid", "accountIds": ["69940677f64f789748e3e5ce"], "sign": "negative" },
+      { "label": "Interest Paid", "accountIds": ["69940677f64f789748e3e5d0"], "sign": "negative" }
+    ],
+    "investing": [
+      { "label": "Equipment Purchased", "accountIds": ["69940677f64f789748e3e5bf"], "sign": "negative" },
+      { "label": "Inventory (net change)", "accountIds": ["69940677f64f789748e3e5be"], "sign": "negative" }
+    ],
+    "financing": [
+      { "label": "Capital Contribution", "accountIds": ["69940677f64f789748e3e5c5"], "sign": "negative" },
+      { "label": "Proceeds from Loan", "accountIds": ["69940677f64f789748e3e5c2"], "sign": "negative" }
+    ]
+  }
+}

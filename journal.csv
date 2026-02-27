@@ -1,0 +1,9 @@
+date,reference,description,accountCode,debit,credit,narration
+2026-03-01,JV-001,Owner capital introduced,1001,500000,0,"Cash introduced by owner Aarav"
+2026-03-01,JV-001,Owner capital introduced,3000,0,500000,"Owner's capital - Aarav"
+2026-03-02,JV-002,Transfer to bank,1002,300000,0,"Funds moved from cash to bank current account"
+2026-03-02,JV-002,Transfer to bank,1001,0,300000,"Cash reduced on transfer to bank"
+2026-03-03,JV-003,Office rent paid in advance,1200,60000,0,"Prepaid office rent for first quarter"
+2026-03-03,JV-003,Office rent paid in advance,1002,0,60000,"Bank paid for prepaid rent"
+2026-03-04,JV-004,Branding and logo design fee,5100,15000,0,"Professional fees for brand identity and logo"
+2026-03-04,JV-004,Branding and logo design fee,1002,0,15000,"Bank paid for branding and logo design"

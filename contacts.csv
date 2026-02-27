@@ -1,0 +1,5 @@
+name,type,legalName,gstin,pan,email,phone,address,city,state,stateCode,pincode,placeOfSupply,creditLimit,paymentTermsDays,tags,notes,isActive,arApType
+Youth Streetwear Co.,CUSTOMER,Youth Streetwear Co. Pvt Ltd,22AAAAA0000A1Z5,AAAAA0000A,hello@youthstreetwear.example,+919811223344,"101, High Street, MG Road",Bengaluru,Karnataka,29,560001,29-Karnataka,0,0,"brand,self","Own retail brand entity",true,
+Urban Threads Mills,VENDOR,Urban Threads Textile Mills,29BBBBB0000B1Z6,BBBBB0000B,sales@urbanthreads.example,+918822334455,"12, Industrial Estate",Bengaluru,Karnataka,29,560048,29-Karnataka,300000,30,"fabric,supplier","Primary fabric supplier for shirts and jeans",true,
+Denim Craft Manufacturers,VENDOR,Denim Craft Apparels,27CCCCC0000C1Z7,CCCCC0000C,orders@denimcraft.example,+919900112233,"45, Apparel Park",Pune,Maharashtra,27,411001,27-Maharashtra,500000,45,"garments,supplier","Finished jeans and shirts manufacturer",true,
+Pixel Studio,VENDOR,,29DDDDD0000D1Z8,DDDDD0000D,studio@pixelstudio.example,+919977665544,"22, Creative Hub",Bengaluru,Karnataka,29,560020,29-Karnataka,0,15,"design,photo","Branding, lookbooks, and product photography partner",true,

@@ -1,0 +1,2 @@
+name,type,legalName,gstin,pan,email,phone,address,city,state,stateCode,pincode,placeOfSupply,creditLimit,paymentTermsDays,tags,notes,isActive,arApType
+Acme Corp,CUSTOMER,,22AAAAA0000A1Z5,AAAAA0000A,contact@example.com,+919876543210,,,,,,,,30,,,true,

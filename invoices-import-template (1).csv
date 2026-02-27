@@ -1,0 +1,4 @@
+reference,date,contactId,paymentMode,placeOfSupply,paymentDue,items,dueDate,paymentTerms,narration
+INV-000001,2026-02-27,,CREDIT,21-Odisha,2026-03-29,"[{""productId"":"""",""name"":""Slim Fit Jeans"",""qty"":1,""rate"":1399,""gstRate"":12}]",,Net 30,"Credit sale – 1 slim fit jeans to a youth customer"
+INV-000002,2026-02-28,,CASH,21-Odisha,,"[{""productId"":"""",""name"":""Graphic Tee"",""qty"":2,""rate"":499,""gstRate"":12}]",,,"POS cash sale – 2 graphic tees"
+INV-000003,2026-03-01,,ONLINE,21-Odisha,2026-03-31,"[{""productId"":"""",""name"":""Oversized Shirt"",""qty"":1,""rate"":899,""gstRate"":12}]",,Net 30,"Online order – 1 oversized shirt"

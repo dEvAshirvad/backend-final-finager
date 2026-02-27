@@ -1,0 +1,35 @@
+# Node modules
+node_modules
+pnpm-lock.yaml
+
+# Build output
+dist
+build
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environment files
+.env
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Git files
+.git
+.gitignore
+
+# Other
+*.md
+*.log
+
+# Docker files
+db.yml
+docker-compose.yml
+logs
+bin
+mongodb_data_container
+redis_data

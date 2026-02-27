@@ -1,0 +1,4 @@
+name,variants,hsnOrSacCode,isInventoryItem,productType,bom,gstRate,category,unit,costPrice,sellingPrice,lowStockThreshold,tags,notes,isActive
+Graphic Tee,"black-%-M-%-20,black-%-L-%-15,white-%-M-%-18,white-%-L-%-12",6109,true,FINISHED,,12,apparel,pcs,220,499,25,"tshirt,graphic,unisex","Cotton graphic tees targeted at college youth",true
+Slim Fit Jeans,"blue-%-30-%-10,blue-%-32-%-14,blue-%-34-%-8,black-%-32-%-12",6203,true,FINISHED,,12,apparel,pcs,700,1399,20,"jeans,denim,slim-fit","Mid-rise slim fit denim for everyday wear",true
+Oversized Shirt,"olive-%-M-%-10,olive-%-L-%-10,checked-%-M-%-8,checked-%-L-%-6",6205,true,FINISHED,,12,apparel,pcs,350,899,15,"shirt,oversized,streetwear","Oversized shirts designed for layering and streetwear looks",true
