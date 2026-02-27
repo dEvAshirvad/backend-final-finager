@@ -194,4 +194,74 @@ export default class ReportsHandler {
       throw error;
     }
   }
+
+  static async gstReconciliation(req: Request, res: Response) {
+    const ctx = await requireOrgMember(req, res);
+    if (!ctx) return;
+
+    try {
+      const file = req.file;
+      if (!file || !file.path) {
+        return Respond(res, { message: 'CSV file is required (field "file")' }, 400);
+      }
+
+      const { periodFrom, periodTo, matchOn, toleranceAmount, toleranceDateDays } =
+        req.body as {
+          periodFrom?: string;
+          periodTo?: string;
+          matchOn?: string;
+          toleranceAmount?: string;
+          toleranceDateDays?: string;
+        };
+
+      if (!periodFrom || !periodTo) {
+        return Respond(
+          res,
+          { message: 'periodFrom and periodTo are required in form-data body' },
+          400
+        );
+      }
+
+      let parsedMatchOn: string[] | undefined;
+      if (matchOn) {
+        try {
+          const v = JSON.parse(matchOn);
+          if (Array.isArray(v) && v.every((x) => typeof x === 'string')) {
+            parsedMatchOn = v;
+          }
+        } catch {
+          // ignore invalid matchOn; use defaults in service
+        }
+      }
+
+      const tolAmount =
+        toleranceAmount !== undefined && toleranceAmount !== ''
+          ? Number(toleranceAmount)
+          : undefined;
+      const tolDays =
+        toleranceDateDays !== undefined && toleranceDateDays !== ''
+          ? Number(toleranceDateDays)
+          : undefined;
+
+      const report = await ReportsServices.gstReconciliation(
+        ctx.organizationId,
+        {
+          gstr2bFilePath: file.path,
+          periodFrom: new Date(periodFrom),
+          periodTo: new Date(periodTo),
+          matchOn: parsedMatchOn,
+          toleranceAmount: Number.isFinite(tolAmount ?? NaN) ? tolAmount : undefined,
+          toleranceDateDays: Number.isInteger(tolDays ?? NaN) ? tolDays : undefined,
+        }
+      );
+
+      return Respond(
+        res,
+        { message: 'GST reconciliation report', ...report },
+        200
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
 }

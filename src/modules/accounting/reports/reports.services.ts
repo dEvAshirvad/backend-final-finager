@@ -1,4 +1,6 @@
 import { Types } from 'mongoose';
+import fs from 'node:fs';
+import path from 'node:path';
 import { COAModel, type COA } from '../coa/coa.model';
 import { JournalEntryModel } from '../journal/journal.model';
 
@@ -96,6 +98,67 @@ export interface GSTSummaryReport {
   table31: GSTR3BTable31;
   table4: GSTR3BTable4;
   note?: string;
+}
+
+// ─── GST Reconciliation (GSTR-2B vs Books) ────────────────────────────────────
+
+export interface GSTR2BRow {
+  gstin: string;
+  tradeName: string;
+  invoiceNumber: string;
+  invoiceType: string;
+  invoiceDate: Date;
+  invoiceValue: number;
+  placeOfSupply: string;
+  reverseCharge: string;
+  taxableValue: number;
+  igst: number;
+  cgst: number;
+  sgst: number;
+}
+
+export interface GSTBooksITCRow {
+  journalId: string;
+  reference?: string;
+  date?: Date;
+  amount: number;
+}
+
+export interface GSTReconciliationSummary {
+  gstr2bItc: number;
+  booksItc: number;
+  difference: number;
+  matchedCount: number;
+  missingInBooksCount: number;
+  missingInGstr2bCount: number;
+}
+
+export interface GSTReconciliationBucketRow {
+  gstin?: string;
+  invoiceNumber?: string;
+  invoiceDate?: string;
+  gstr2b?: {
+    taxableValue: number;
+    cgst: number;
+    sgst: number;
+    igst: number;
+  };
+  books?: {
+    journalReferences: string[];
+    itcAmount: number;
+  };
+}
+
+export interface GSTReconciliationReport {
+  period: { from: Date; to: Date };
+  summary: GSTReconciliationSummary;
+  buckets: {
+    matched: GSTReconciliationBucketRow[];
+    amountMismatch: GSTReconciliationBucketRow[];
+    dateMismatch: GSTReconciliationBucketRow[];
+    missingInBooks: GSTReconciliationBucketRow[];
+    missingInGstr2b: GSTReconciliationBucketRow[];
+  };
 }
 
 // ─── P&L (Profit & Loss) Report ─────────────────────────────────────────────
@@ -295,7 +358,8 @@ async function resolveAccountCodesToIds(
   const map = new Map<string, string>();
   for (const a of accounts) {
     const code = (a as { code?: string }).code;
-    if (code != null) map.set(String(code), (a as { _id: Types.ObjectId })._id.toString());
+    if (code != null)
+      map.set(String(code), (a as { _id: Types.ObjectId })._id.toString());
   }
   return map;
 }
@@ -325,12 +389,24 @@ export function getDefaultPnLConfig(): PnLConfig {
 export function getDefaultCashFlowConfig(): CashFlowConfig {
   return {
     operating: [
-      { label: 'Cash and Bank', accountCodes: ['1001', '1002'], sign: 'positive' },
-      { label: 'Accounts Receivable', accountCodes: ['1100'], sign: 'positive' },
+      {
+        label: 'Cash and Bank',
+        accountCodes: ['1001', '1002'],
+        sign: 'positive',
+      },
+      {
+        label: 'Accounts Receivable',
+        accountCodes: ['1100'],
+        sign: 'positive',
+      },
       { label: 'Accounts Payable', accountCodes: ['2000'], sign: 'negative' },
     ],
     investing: [
-      { label: 'Equipment and Assets', accountCodes: ['1400'], sign: 'negative' },
+      {
+        label: 'Equipment and Assets',
+        accountCodes: ['1400'],
+        sign: 'negative',
+      },
     ],
     financing: [
       { label: 'Short-Term Loans', accountCodes: ['2100'], sign: 'positive' },
@@ -396,7 +472,11 @@ async function getCashFlowJournalItems(
 
   for (const j of journals) {
     const raw = j as unknown as {
-      lines?: { accountId: Types.ObjectId | string; debit?: number; credit?: number }[];
+      lines?: {
+        accountId: Types.ObjectId | string;
+        debit?: number;
+        credit?: number;
+      }[];
       description?: string;
       date?: Date;
       reference?: string;
@@ -408,7 +488,9 @@ async function getCashFlowJournalItems(
       const aid =
         typeof line.accountId === 'string'
           ? line.accountId
-          : (line.accountId && (line.accountId as Types.ObjectId).toString()) ?? '';
+          : ((line.accountId &&
+              (line.accountId as Types.ObjectId).toString()) ??
+            '');
       if (cashSet.has(aid)) {
         cashAmount += (line.debit ?? 0) - (line.credit ?? 0);
       } else {
@@ -420,7 +502,9 @@ async function getCashFlowJournalItems(
     const acc = counterAccountId ? accountsMap.get(counterAccountId) : null;
     const accountCode = (acc as { code?: string })?.code ?? '';
     const accountName = (acc as { name?: string })?.name ?? '';
-    const accountType = ((acc as { type?: string })?.type ?? 'ASSET').toLowerCase();
+    const accountType = (
+      (acc as { type?: string })?.type ?? 'ASSET'
+    ).toLowerCase();
     const item: CashFlowItemDetail = {
       accountId: counterAccountId,
       accountCode,
@@ -586,7 +670,9 @@ export default class ReportsServices {
             accountId: id,
             accountCode: (acc as { code?: string }).code ?? '',
             accountName: (acc as { name?: string }).name ?? '',
-            accountType: ((acc as { type?: string }).type ?? 'ASSET').toLowerCase(),
+            accountType: (
+              (acc as { type?: string }).type ?? 'ASSET'
+            ).toLowerCase(),
             balance: Math.round(amount * 100) / 100,
           };
         })
@@ -632,7 +718,8 @@ export default class ReportsServices {
     }, 0);
 
     const netIncome = Math.round((incomeTotal - expenseTotal) * 100) / 100;
-    const totalLiabilitiesAndEquity = Math.round((liabilities.total + equity.total + netIncome) * 100) / 100;
+    const totalLiabilitiesAndEquity =
+      Math.round((liabilities.total + equity.total + netIncome) * 100) / 100;
     const diff = Math.abs(assets.total - totalLiabilitiesAndEquity);
     const isBalanced = diff < 0.02;
     const effectiveDate = asOfDate ?? new Date();
@@ -668,7 +755,8 @@ export default class ReportsServices {
       const id = (acc as { _id?: Types.ObjectId })._id?.toString() ?? '';
       const delta = movements.get(id) ?? 0;
       const type = (acc as { type?: string }).type ?? '';
-      if (type === 'INCOME') revenue += -delta; // Income: credit increases
+      if (type === 'INCOME')
+        revenue += -delta; // Income: credit increases
       else if (type === 'EXPENSE') expenses += delta; // Expense: debit increases
     }
     const round = (n: number) => Math.round(n * 100) / 100;
@@ -857,7 +945,9 @@ export default class ReportsServices {
       },
     ];
     type ItcRow = { _id: null; totalITC: number };
-    const itcResult = (await JournalEntryModel.aggregate(itcPipeline)) as ItcRow[];
+    const itcResult = (await JournalEntryModel.aggregate(
+      itcPipeline
+    )) as ItcRow[];
     const itcAmount =
       itcResult.length > 0 && itcResult[0].totalITC != null
         ? itcResult[0].totalITC
@@ -868,7 +958,10 @@ export default class ReportsServices {
         description:
           'Outward taxable supplies (other than zero-rated, nil-rated, exempt and non-GST)',
         taxableValue: Math.round(outwardTaxableValue * 100) / 100,
-        tax: Math.round((outputTax > 0 ? outputTax : outwardTaxableValue * 0.18) * 100) / 100,
+        tax:
+          Math.round(
+            (outputTax > 0 ? outputTax : outwardTaxableValue * 0.18) * 100
+          ) / 100,
       },
       '3.1(b)': {
         description: 'Outward taxable supplies (zero-rated)',
@@ -931,6 +1024,158 @@ export default class ReportsServices {
   }
 
   /**
+   * GST Reconciliation: compares GSTR-2B CSV (uploaded) with ITC booked in journals.
+   * Uses GST input accounts (e.g. 1500) on the books side.
+   */
+  static async gstReconciliation(
+    organizationId: OrganizationId,
+    params: {
+      gstr2bFilePath: string;
+      periodFrom: Date;
+      periodTo: Date;
+      matchOn?: string[];
+      toleranceAmount?: number;
+      toleranceDateDays?: number;
+    }
+  ): Promise<GSTReconciliationReport> {
+    const {
+      gstr2bFilePath,
+      periodFrom,
+      periodTo,
+      matchOn,
+      toleranceAmount,
+      toleranceDateDays,
+    } = params;
+
+    const effectiveMatchOn =
+      matchOn && matchOn.length > 0
+        ? matchOn
+        : ['gstin', 'invoiceNumber', 'invoiceDate', 'taxableValue'];
+    void effectiveMatchOn;
+    const tolAmount = toleranceAmount ?? 1.0;
+    const tolDays = toleranceDateDays ?? 3;
+
+    const gstr2bRows = await parseGstr2bCsv(gstr2bFilePath);
+    const booksRows = await getBooksITCRows(
+      organizationId,
+      periodFrom,
+      periodTo
+    );
+
+    const gstr2bItcTotal = gstr2bRows.reduce(
+      (s, r) => s + (r.igst + r.cgst + r.sgst),
+      0
+    );
+    const booksItcTotal = booksRows.reduce((s, r) => s + r.amount, 0);
+
+    const round = (n: number) => Math.round(n * 100) / 100;
+
+    const matched: GSTReconciliationBucketRow[] = [];
+    const amountMismatch: GSTReconciliationBucketRow[] = [];
+    const dateMismatch: GSTReconciliationBucketRow[] = [];
+    const missingInBooks: GSTReconciliationBucketRow[] = [];
+    const missingInGstr2b: GSTReconciliationBucketRow[] = [];
+
+    const usedBooks = new Set<number>();
+
+    for (const row of gstr2bRows) {
+      const rowItc = row.igst + row.cgst + row.sgst;
+
+      let bestIdx = -1;
+      let bestDiff = Number.POSITIVE_INFINITY;
+
+      for (let i = 0; i < booksRows.length; i++) {
+        if (usedBooks.has(i)) continue;
+        const b = booksRows[i];
+        const diffAmount = Math.abs(b.amount - rowItc);
+        if (diffAmount < bestDiff) {
+          bestDiff = diffAmount;
+          bestIdx = i;
+        }
+      }
+
+      const baseBucket: GSTReconciliationBucketRow = {
+        gstin: row.gstin,
+        invoiceNumber: row.invoiceNumber,
+        invoiceDate: row.invoiceDate.toISOString().slice(0, 10),
+        gstr2b: {
+          taxableValue: row.taxableValue,
+          cgst: row.cgst,
+          sgst: row.sgst,
+          igst: row.igst,
+        },
+      };
+
+      if (bestIdx === -1 || bestDiff > tolAmount) {
+        missingInBooks.push(baseBucket);
+        continue;
+      }
+
+      usedBooks.add(bestIdx);
+      const b = booksRows[bestIdx];
+      const booksBucketPart = {
+        journalReferences: [b.reference ?? b.journalId],
+        itcAmount: round(b.amount),
+      };
+
+      const dateMatch =
+        !b.date ||
+        Math.abs(
+          (b.date.getTime() - row.invoiceDate.getTime()) / (1000 * 60 * 60 * 24)
+        ) <= tolDays;
+
+      if (bestDiff <= tolAmount && dateMatch) {
+        matched.push({
+          ...baseBucket,
+          books: booksBucketPart,
+        });
+      } else if (!dateMatch && bestDiff <= tolAmount) {
+        dateMismatch.push({
+          ...baseBucket,
+          books: booksBucketPart,
+        });
+      } else {
+        amountMismatch.push({
+          ...baseBucket,
+          books: booksBucketPart,
+        });
+      }
+    }
+
+    for (let i = 0; i < booksRows.length; i++) {
+      if (usedBooks.has(i)) continue;
+      const b = booksRows[i];
+      missingInGstr2b.push({
+        books: {
+          journalReferences: [b.reference ?? b.journalId],
+          itcAmount: round(b.amount),
+        },
+      });
+    }
+
+    const summary: GSTReconciliationSummary = {
+      gstr2bItc: round(gstr2bItcTotal),
+      booksItc: round(booksItcTotal),
+      difference: round(booksItcTotal - gstr2bItcTotal),
+      matchedCount: matched.length,
+      missingInBooksCount: missingInBooks.length,
+      missingInGstr2bCount: missingInGstr2b.length,
+    };
+
+    return {
+      period: { from: periodFrom, to: toEndOfDayUTC(periodTo) },
+      summary,
+      buckets: {
+        matched,
+        amountMismatch,
+        dateMismatch,
+        missingInBooks,
+        missingInGstr2b,
+      },
+    };
+  }
+
+  /**
    * P&L (Profit & Loss): period report. Config uses account codes; resolved to IDs per org.
    * If config omitted, use getDefaultPnLConfig() (code-based, works for standard COA templates).
    */
@@ -979,7 +1224,8 @@ export default class ReportsServices {
         const accountIds = item.accountCodes
           .map((c) => codeToId.get(c))
           .filter(Boolean) as string[];
-        const accountsDetail: { code: string; name: string; amount: number }[] = [];
+        const accountsDetail: { code: string; name: string; amount: number }[] =
+          [];
         let amount = 0;
         for (const id of accountIds) {
           const amt = getSignedAmount(id);
@@ -1056,8 +1302,10 @@ export default class ReportsServices {
       }
     }
 
-    const cashAccountCodes =
-      effectiveConfig.operating?.[0]?.accountCodes ?? ['1001', '1002'];
+    const cashAccountCodes = effectiveConfig.operating?.[0]?.accountCodes ?? [
+      '1001',
+      '1002',
+    ];
     const allCodesWithCash = new Set([...allCodes, ...cashAccountCodes]);
 
     const [movements, accountsMap, codeToId] = await Promise.all([
@@ -1091,7 +1339,8 @@ export default class ReportsServices {
           0
         );
         const amount = item.sign === 'negative' ? round(-raw) : round(raw);
-        const accountsDetail: { code: string; name: string; amount: number }[] = [];
+        const accountsDetail: { code: string; name: string; amount: number }[] =
+          [];
         for (const id of accountIds) {
           const amt = movements.get(id) ?? 0;
           const signed = item.sign === 'negative' ? -amt : amt;
@@ -1115,9 +1364,18 @@ export default class ReportsServices {
       };
     };
 
-    const operating = buildSection(effectiveConfig.operating, 'Operating Activities');
-    const investing = buildSection(effectiveConfig.investing, 'Investing Activities');
-    const financing = buildSection(effectiveConfig.financing, 'Financing Activities');
+    const operating = buildSection(
+      effectiveConfig.operating,
+      'Operating Activities'
+    );
+    const investing = buildSection(
+      effectiveConfig.investing,
+      'Investing Activities'
+    );
+    const financing = buildSection(
+      effectiveConfig.financing,
+      'Financing Activities'
+    );
 
     const effectivePeriodTo = toEndOfDayUTC(periodTo);
     const journalItems = await getCashFlowJournalItems(
@@ -1147,4 +1405,127 @@ export default class ReportsServices {
       usedDefaultConfig,
     };
   }
+}
+
+async function parseGstr2bCsv(filePath: string): Promise<GSTR2BRow[]> {
+  const abs = path.resolve(filePath);
+  const raw = await fs.promises.readFile(abs, 'utf8');
+  const lines = raw
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+  if (lines.length <= 1) return [];
+
+  const header = lines[0].split(',');
+  const idx = (name: string) => header.indexOf(name);
+
+  const idxGstin = idx('GSTIN of supplier');
+  const idxName = idx('Trade/Legal name');
+  const idxInvNo = idx('Invoice number');
+  const idxInvType = idx('Invoice type');
+  const idxInvDate = idx('Invoice Date');
+  const idxInvValue = idx('Invoice Value(₹)');
+  const idxPos = idx('Place of supply');
+  const idxRev = idx('Supply Attract Reverse Charge');
+  const idxTaxable = idx('Taxable Value (₹)');
+  const idxIgst = idx('Integrated Tax(₹)');
+  const idxCgst = idx('Central Tax(₹)');
+  const idxSgst = idx('State/UT Tax(₹)');
+
+  const rows: GSTR2BRow[] = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',');
+    if (cols.length < header.length) continue;
+
+    const num = (v: string | undefined) => {
+      if (!v) return 0;
+      const n = Number(v.replace(/,/g, ''));
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const dateStr = cols[idxInvDate] ?? '';
+    const parsedDate = new Date(dateStr);
+
+    rows.push({
+      gstin: cols[idxGstin] ?? '',
+      tradeName: cols[idxName] ?? '',
+      invoiceNumber: cols[idxInvNo] ?? '',
+      invoiceType: cols[idxInvType] ?? '',
+      invoiceDate: Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate,
+      invoiceValue: num(cols[idxInvValue]),
+      placeOfSupply: cols[idxPos] ?? '',
+      reverseCharge: cols[idxRev] ?? '',
+      taxableValue: num(cols[idxTaxable]),
+      igst: num(cols[idxIgst]),
+      cgst: num(cols[idxCgst]),
+      sgst: num(cols[idxSgst]),
+    });
+  }
+
+  return rows;
+}
+
+async function getBooksITCRows(
+  organizationId: OrganizationId,
+  periodFrom: Date,
+  periodTo: Date
+): Promise<GSTBooksITCRow[]> {
+  const orgObjectId = new Types.ObjectId(organizationId);
+  const effectivePeriodTo = toEndOfDayUTC(periodTo);
+
+  const pipeline = [
+    {
+      $match: {
+        organizationId: orgObjectId,
+        status: 'POSTED',
+        date: { $gte: periodFrom, $lte: effectivePeriodTo },
+      },
+    },
+    { $unwind: '$lines' },
+    {
+      $lookup: {
+        from: 'coas',
+        localField: 'lines.accountId',
+        foreignField: '_id',
+        as: 'account',
+      },
+    },
+    { $unwind: '$account' },
+    {
+      $match: {
+        'account.type': { $in: ['EXPENSE', 'ASSET'] },
+        $or: [
+          { 'account.name': { $regex: /input|itc|igst|cgst|sgst|gst/i } },
+          { 'account.code': '1500' },
+        ],
+      },
+    },
+    {
+      $project: {
+        journalId: '$_id',
+        reference: '$reference',
+        date: '$date',
+        amount: '$lines.debit',
+      },
+    },
+  ];
+
+  type Row = {
+    journalId: Types.ObjectId;
+    reference?: string;
+    date?: Date;
+    amount?: number;
+  };
+
+  const result = (await JournalEntryModel.aggregate(pipeline)) as Row[];
+
+  return result
+    .filter((r) => (r.amount ?? 0) !== 0)
+    .map((r) => ({
+      journalId: r.journalId.toString(),
+      reference: r.reference,
+      date: r.date,
+      amount: r.amount ?? 0,
+    }));
 }

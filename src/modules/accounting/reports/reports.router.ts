@@ -1,6 +1,7 @@
 import { createRouter } from '@/configs/serverConfig';
 import { validateRequest } from '@/middlewares/zod-validate-request';
 import { z } from 'zod';
+import { uploadJournalCsv } from '@/configs/multer';
 import ReportsHandler from './reports.handler';
 
 const router = createRouter();
@@ -111,6 +112,14 @@ router.post(
     }),
   }),
   ReportsHandler.getCashFlow
+);
+
+// ─── GST Reconciliation (GSTR-2B CSV upload + books from journals) ────────────
+
+router.post(
+  '/gst-reconciliation',
+  uploadJournalCsv.single('file'),
+  ReportsHandler.gstReconciliation
 );
 
 export default router;

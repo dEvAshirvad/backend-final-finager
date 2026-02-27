@@ -486,7 +486,7 @@ ASSET account balances as of a date. Optionally filter by `inventoryParentCode`.
 
 **GET** `/api/v1/accounting/reports/gst-summary`
 
-GSTR-3B pre-fill: Table 3.1 (Outward supplies), Table 4 (ITC).
+GSTR-3B pre-fill: Table 3.1 (Outward supplies), Table 4 (ITC), **driven entirely from posted journal entries** (output tax and ITC accounts).
 
 **Query parameters**
 
@@ -496,6 +496,135 @@ GSTR-3B pre-fill: Table 3.1 (Outward supplies), Table 4 (ITC).
 | `periodTo` | string (ISO) | Yes | Period end |
 
 **Response:** `200 OK` – `periodFrom`, `periodTo`, `table31`, `table4`, optional `note`.
+
+---
+
+## GST Reconciliation Engine (GSTR‑2B vs Books)
+
+The GST reconciliation engine compares **supplier GST invoices from GSTR‑2B** (e.g. `gstr2b.csv`) with **input tax credit booked in your journals** (e.g. from `journal.csv`).
+
+- **Source 1 – Books (journal)**: ITC is read from posted journals where:
+  - Debit account is a GST input account (e.g. `1500` – GST Input Credit), and
+  - The journal lines fall within the requested period.
+- **Source 2 – GSTR‑2B**: Supplier invoices as downloaded from the GSTN portal.
+  - File format follows the **GSTR‑2B B2B CSV** header structure (e.g. `GSTIN of supplier`, `Invoice number`, `Invoice Date`, `Taxable Value (₹)`, `Integrated Tax(₹)`, `Central Tax(₹)`, `State/UT Tax(₹)`, `ITC Availability`, etc.).
+
+> In this project, sample data for reconciliation is provided via `journal.csv` (books) and `gstr2b.csv` (GSTR‑2B import).
+
+### Reconciliation Endpoint
+
+**POST** `/api/v1/accounting/reports/gst-reconciliation`
+
+Performs line‑level reconciliation between:
+
+- **GSTR‑2B purchase invoices** – uploaded as a **single CSV file** in the request, and
+- **Booked ITC in books** – read automatically from posted journal entries (no need to upload `journal.csv`).
+
+#### Request (multipart/form-data)
+
+Content type: `multipart/form-data`
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `file` | file (`text/csv`) | Yes | GSTR‑2B B2B CSV export (e.g. `gstr2b.csv`) |
+| `periodFrom` | string (ISO) | Yes | GST period start (e.g. `2026-03-01`) |
+| `periodTo` | string (ISO) | Yes | GST period end (e.g. `2026-03-31`) |
+| `matchOn` | string (JSON array) | No | Override default match keys, e.g. `["gstin","invoiceNumber","invoiceDate","taxableValue"]` |
+| `toleranceAmount` | number | No | Allowed rounding difference in total tax/ITC (₹), default `1.0` |
+| `toleranceDateDays` | number | No | Allowed difference in days between portal invoice date and books posting date, default `3` |
+
+**Default matching options**
+
+- `matchOn` (when omitted):
+  - `gstin` ↔ `GSTIN of supplier`
+  - `invoiceNumber` ↔ `Invoice number`
+  - `invoiceDate` ↔ `Invoice Date`
+  - `taxableValue` ↔ `Taxable Value (₹)` / sum of taxable base linked to GST input journals.
+- `toleranceAmount`: `1.0`
+- `toleranceDateDays`: `3`
+
+### Matching Logic (high‑level)
+
+1. **Load GSTR‑2B** rows for the period.
+2. **Load journal ITC** lines for the period:
+   - Include only lines where `accountCode` is a GST input account (e.g. `1500`).
+3. **Normalize keys**:
+   - Strip spaces, uppercase invoice numbers.
+   - Normalize GSTIN, and parse dates to ISO.
+4. **Match** each GSTR‑2B row to books by:
+   - Same GSTIN + invoice number.
+   - Invoice date within `dateDays` tolerance.
+   - Taxable value + tax amounts within `amount` tolerance against the sum of matching journal lines.
+5. **Classify**:
+   - **`matched`** – fully matched amount and date.
+   - **`amountMismatch`** – same invoice but ITC amount differs.
+   - **`dateMismatch`** – same invoice and amount, but outside date tolerance.
+   - **`missingInBooks`** – present in GSTR‑2B, no ITC booked.
+   - **`missingInGstr2b`** – ITC booked in books, but no corresponding GSTR‑2B invoice.
+
+### Response Shape
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "status": 200,
+  "data": {
+    "period": {
+      "from": "2026-03-01T00:00:00.000Z",
+      "to": "2026-03-31T23:59:59.999Z"
+    },
+    "summary": {
+      "gstr2bItc": 46350.0,
+      "booksItc": 46350.0,
+      "difference": 0,
+      "matchedCount": 8,
+      "missingInBooksCount": 1,
+      "missingInGstr2bCount": 0
+    },
+    "buckets": {
+      "matched": [
+        {
+          "gstin": "22AAYSC0001G1Z1",
+          "invoiceNumber": "UTM-INV-0001",
+          "invoiceDate": "2026-03-15",
+          "gstr2b": {
+            "taxableValue": 15000,
+            "cgst": 900,
+            "sgst": 900,
+            "igst": 0
+          },
+          "books": {
+            "journalReferences": ["JV-021"],
+            "itcAmount": 1800
+          }
+        }
+      ],
+      "amountMismatch": [],
+      "dateMismatch": [],
+      "missingInBooks": [],
+      "missingInGstr2b": []
+    }
+  }
+}
+```
+
+### How `journal.csv` and `gstr2b.csv` map to this engine
+
+- **`journal.csv` (books)**:
+  - ITC entries like:
+    - Debit `1500` (GST Input Credit) with narration such as `"GST input credit on inventory EXP-000007"` or `"GST input credit on consulting EXP-000008"`.
+  - These represent **ITC actually recorded in your books**.
+- **`gstr2b.csv` (GSTR‑2B)**:
+  - Contains supplier GSTIN, invoice numbers, invoice dates, taxable value, and tax split (IGST/CGST/SGST).
+  - Represents **ITC available as per GST portal**.
+
+The reconciliation engine allows you to:
+
+- Confirm that **all eligible ITC in `gstr2b.csv` is recorded in `journal.csv`** for the period.
+- Identify **missed ITC** (in GSTR‑2B but not in books).
+- Identify **incorrectly claimed ITC** (in books but not in GSTR‑2B).
 
 ---
 

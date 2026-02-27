@@ -1,0 +1,5 @@
+GSTIN of supplier,Trade/Legal name,Invoice number,Invoice type,Invoice Date,Invoice Value(₹),Place of supply,Supply Attract Reverse Charge,Taxable Value (₹),Integrated Tax(₹),Central Tax(₹),State/UT Tax(₹),Cess(₹),GSTR-1/IFF/GSTR-5 Period,GSTR-1/IFF/GSTR-5 Period,ITC Availability,Reason,Applicable % of Tax Rate,Source,IRN,IRN Date
+22AAYSC0001G1Z1,Urban Threads Mills,UTM-INV-0001,Regular,15/03/2026,16800,Chhattisgarh,No,15000,0,900,900,0,Mar'26,20/03/2026,Yes,,100%,PORTAL,,
+22AAYSC0002G1Z2,Denim Craft Manufacturers,DCM-INV-0003,Regular,18/03/2026,21000,Chhattisgarh,No,21000,0,0,0,0,Mar'26,22/03/2026,Yes,,100%,PORTAL,,
+22AAYSC0003G1Z3,Pixel Studio,PXS-EXP-0002,Regular,16/03/2026,15000,Chhattisgarh,No,15000,0,750,750,0,Mar'26,21/03/2026,Yes,,100%,PORTAL,,
+22AAYSC0004G1Z4,Insight Consulting,IC-EXP-0008,Regular,22/03/2026,11800,Chhattisgarh,No,10000,0,900,900,0,Mar'26,27/03/2026,Yes,,100%,PORTAL,,
